@@ -1,3 +1,9 @@
+import { readFileSync, writeFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const TOKEN_FILE = join(dirname(fileURLToPath(import.meta.url)), '.zoho-token.json')
+
 export class ZohoTokenManager {
   #clientId
   #clientSecret
@@ -14,6 +20,7 @@ export class ZohoTokenManager {
     this.#clientSecret = clientSecret
     this.#refreshToken = refreshToken
     this.#tokenUrl = tokenUrl
+    this.#loadFromDisk()
   }
 
   async getAccessToken() {
@@ -21,6 +28,26 @@ export class ZohoTokenManager {
       return this.#cachedToken
     }
     return this.#refresh()
+  }
+
+  #loadFromDisk() {
+    try {
+      const { token, expiresAt } = JSON.parse(readFileSync(TOKEN_FILE, 'utf8'))
+      if (token && expiresAt && Date.now() < expiresAt) {
+        this.#cachedToken = token
+        this.#expiresAt = expiresAt
+      }
+    } catch {
+      // no token on disk yet — will fetch on first request
+    }
+  }
+
+  #saveToDisk() {
+    try {
+      writeFileSync(TOKEN_FILE, JSON.stringify({ token: this.#cachedToken, expiresAt: this.#expiresAt }))
+    } catch {
+      // non-fatal — in-memory cache still works
+    }
   }
 
   async #refresh() {
@@ -39,8 +66,9 @@ export class ZohoTokenManager {
     }
 
     this.#cachedToken = data.access_token
-    // Expire 60 s before actual expiry to avoid clock skew issues
+    // Expire 60 s early to avoid clock-skew issues
     this.#expiresAt = Date.now() + (data.expires_in - 60) * 1000
+    this.#saveToDisk()
     return this.#cachedToken
   }
 }
