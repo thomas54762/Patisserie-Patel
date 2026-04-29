@@ -22,10 +22,7 @@ RUN apk add --no-cache curl
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/drizzle ./drizzle
-COPY --from=builder /app/src/db ./src/db
-COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/vite.config.json ./vite.config.json
 
 EXPOSE 3000
 CMD ["sh", "-c", "npm start"]
