@@ -7,7 +7,7 @@
     "dev": "concurrently \"node --env-file=.env server/index.js\" \"vite\"",
     "server": "node --env-file=.env server/index.js",
     "build": "vite build",
-    "start": "cross-env NODE_ENV=production node --env-file=.env server/index.js",
+    "start": "cross-env NODE_ENV=production node server/index.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
