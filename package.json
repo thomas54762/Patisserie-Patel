@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"node --env-file=.env.local server/index.js\" \"vite\"",
-    "server": "node --env-file=.env.local server/index.js",
+    "dev": "concurrently \"node --env-file=.env server/index.js\" \"vite\"",
+    "server": "node --env-file=.env server/index.js",
     "build": "vite build",
-    "start": "cross-env NODE_ENV=production node --env-file=.env.local server/index.js",
+    "start": "cross-env NODE_ENV=production node --env-file=.env server/index.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
